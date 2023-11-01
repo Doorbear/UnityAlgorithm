@@ -11,34 +11,34 @@ public class SGShotCtrl : MonoBehaviour
 
     public enum UpdateStep
     {
-        StartDelay,
-        StartShot,
-        WaitDelay,
-        UpdateIndex,
-        FinishShot,
+        StartDelay,                 //시작딜레이
+        StartShot,                  //샷 시작
+        WaitDelay,                  //기다리는 state
+        UpdateIndex,                //순서 인데스 업데이트
+        FinishShot,                 //끝 시점 
     }
 
     [Serializable]
     public class ShotInfo
-    {       
+    {
         public SGBaseShot shotObj;
-        public float afterDelay = 0.1f;
+        public float afterDelay = 0.1f;                             // 0초가 되지않에 0.1로 초기화
     }
-    
-    public SGUtil.AXIS axisMove = SGUtil.AXIS.X_AND_Y;   
-    public bool inheritAngle = false;    
-    public bool startOnAwake = true;  
-    public float startOnAwakeDelay = 1f;   
-    public bool startOnEnable = false;   
-    public float startOnEnableDelay = 1f;   
-    public bool loop = true;  
+
+    public SGUtil.AXIS axisMove = SGUtil.AXIS.X_AND_Y;              //XY XZ 기준 설정하는 Enum
+    public bool inheritAngle = false;
+    public bool startOnAwake = true;
+    public float startOnAwakeDelay = 1f;
+    public bool startOnEnable = false;
+    public float startOnEnableDelay = 1f;
+    public bool loop = true;
 
     public List<ShotInfo> shotList = new List<ShotInfo>();
-           
+
     public UpdateStep updateStep;
     private int nowIndex;
     private float delayTimer;
-  
+
     private bool isInitialized = false;
 
     private void Start()
@@ -50,7 +50,7 @@ public class SGShotCtrl : MonoBehaviour
     }
     private void OnEnable()
     {
-        StartCoroutine(WaitForSingleton());     
+        StartCoroutine(WaitForSingleton());
     }
 
     private IEnumerator WaitForSingleton()
@@ -82,9 +82,9 @@ public class SGShotCtrl : MonoBehaviour
         }
     }
 
-    public void UpdateShot(float deltaTime)
+    public void UpdateShot(float deltaTime)         //State 검사해서 샷을 진행 
     {
-         if (_shooting == false)
+        if (_shooting == false)
         {
             return;
         }
@@ -125,14 +125,14 @@ public class SGShotCtrl : MonoBehaviour
             }
             else
             {
-                nowShotInfo.afterDelay = 0.1f;
+                nowShotInfo.afterDelay = 0.1f;                  //강제로 0.1f 로 설정 0초일경우 
                 delayTimer = 0f;
                 updateStep = UpdateStep.UpdateIndex;
             }
         }
 
         if (updateStep == UpdateStep.UpdateIndex)
-        {            
+        {
             if (loop || nowIndex < shotList.Count - 1)
             {
                 nowIndex = (int)Mathf.Repeat(nowIndex + 1f, shotList.Count);
@@ -141,7 +141,7 @@ public class SGShotCtrl : MonoBehaviour
             else
             {
                 updateStep = UpdateStep.FinishShot;
-            }            
+            }
         }
 
         if (updateStep == UpdateStep.StartShot)
@@ -203,7 +203,7 @@ public class SGShotCtrl : MonoBehaviour
         _shooting = true;
         delayTimer = startDelay;
         updateStep = delayTimer > 0f ? UpdateStep.StartDelay : UpdateStep.StartShot;
-       
+
         nowIndex = 0;
     }
 
